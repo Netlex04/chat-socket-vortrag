@@ -1,0 +1,996 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Review – Was steckt wirklich im Code?</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        scroll-snap-type: y mandatory;
+        overflow-y: scroll;
+        height: 100vh;
+        background-color: #0f172a;
+        color: #f8fafc;
+      }
+
+      .slide {
+        scroll-snap-align: start;
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .glass-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(148, 163, 184, 0.1);
+      }
+
+      .placeholder-box {
+        border: 2px dashed rgba(148, 163, 184, 0.4);
+        background: rgba(30, 41, 59, 0.5);
+        transition: all 0.3s ease;
+      }
+
+      .placeholder-box:hover {
+        border-color: rgba(148, 163, 184, 0.7);
+        background: rgba(30, 41, 59, 0.7);
+      }
+
+      .pattern-gradient {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      }
+
+      .smell-gradient {
+        background: linear-gradient(135deg, #1e1b2e 0%, #0f172a 100%);
+      }
+
+      .transition-gradient {
+        background: linear-gradient(135deg, #312e81 0%, #0f172a 100%);
+      }
+
+      @media (max-width: 768px) {
+        .slide {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <!-- Folie 1: Hero -->
+    <section class="slide pattern-gradient" id="slide-1">
+      <div class="max-w-5xl w-full">
+        <div class="text-center space-y-8">
+          <div class="space-y-4">
+            <h1
+              class="text-5xl md:text-7xl font-bold tracking-tight gradient-text leading-tight"
+            >
+              Was steckt wirklich<br />im Code?
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-400 font-light">
+              Codequalität und Design Patterns im Chat-Socket-System
+            </p>
+          </div>
+
+          <div
+            class="flex flex-col md:flex-row justify-center gap-6 md:gap-12 mt-12"
+          >
+            <div class="flex items-center gap-3 text-lg text-slate-300">
+              <i data-lucide="search" class="w-6 h-6 text-indigo-400"></i>
+              <span>Codequalität bewerten</span>
+            </div>
+            <div class="flex items-center gap-3 text-lg text-slate-300">
+              <i data-lucide="layout" class="w-6 h-6 text-indigo-400"></i>
+              <span>Design Patterns erkennen</span>
+            </div>
+            <div class="flex items-center gap-3 text-lg text-slate-300">
+              <i data-lucide="alert-circle" class="w-6 h-6 text-indigo-400"></i>
+              <span>Was gut ist – und was problematisch wird</span>
+            </div>
+          </div>
+
+          <div class="mt-16 pt-8 border-t border-slate-800">
+            <p class="text-sm text-slate-500 italic">
+              „Im ersten Teil ging es um Aufbau und Architektur. Jetzt geht es
+              darum, was der Code qualitativ zeigt.“
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 2: Gesamtbild -->
+    <section class="slide pattern-gradient" id="slide-2">
+      <div class="max-w-6xl w-full">
+        <h2
+          class="text-4xl md:text-5xl font-bold mb-12 text-center text-slate-100"
+        >
+          Gesamtbild der Codequalität
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Stärken -->
+          <div class="glass-card rounded-2xl p-8 space-y-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-3 bg-emerald-500/10 rounded-lg">
+                <i
+                  data-lucide="check-circle-2"
+                  class="w-8 h-8 text-emerald-400"
+                ></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-emerald-100">Stärken</h3>
+            </div>
+
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Klare Struktur</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Saubere Trennung von Zuständigkeiten</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Verständlicher Code</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Schwächen -->
+          <div class="glass-card rounded-2xl p-8 space-y-6 border-rose-500/20">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-3 bg-rose-500/10 rounded-lg">
+                <i
+                  data-lucide="alert-triangle"
+                  class="w-8 h-8 text-rose-400"
+                ></i>
+              </div>
+              <h3 class="text-2xl font-semibold text-rose-100">Schwächen</h3>
+            </div>
+
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="x"
+                  class="w-5 h-5 text-rose-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Einige typische Code Smells</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="x"
+                  class="w-5 h-5 text-rose-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Skalierungsprobleme in einzelnen Bereichen</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="x"
+                  class="w-5 h-5 text-rose-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Technische Risiken bei Wachstum</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 3: Modularität -->
+    <section class="slide pattern-gradient" id="slide-3">
+      <div class="max-w-4xl w-full text-center">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 text-indigo-300 text-sm mb-6"
+        >
+          <i data-lucide="box" class="w-4 h-4"></i>
+          <span>Architekturqualität</span>
+        </div>
+
+        <h2 class="text-4xl md:text-6xl font-bold mb-6 text-slate-100">
+          Modularität
+        </h2>
+        <p class="text-xl text-slate-400 mb-12">
+          Das System ist sauber getrennt und dadurch gut wartbar.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+          <div class="glass-card p-6 rounded-xl">
+            <i
+              data-lucide="layers"
+              class="w-8 h-8 text-indigo-400 mx-auto mb-4"
+            ></i>
+            <p class="text-slate-300">
+              View / Presenter / Handler klar getrennt
+            </p>
+          </div>
+          <div class="glass-card p-6 rounded-xl">
+            <i
+              data-lucide="shuffle"
+              class="w-8 h-8 text-indigo-400 mx-auto mb-4"
+            ></i>
+            <p class="text-slate-300">Komponenten sind austauschbar</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl">
+            <i
+              data-lucide="test-tube"
+              class="w-8 h-8 text-indigo-400 mx-auto mb-4"
+            ></i>
+            <p class="text-slate-300">Gute Grundlage für Tests</p>
+          </div>
+        </div>
+
+        <div
+          class="mt-8 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg inline-block"
+        >
+          <p class="text-emerald-300 font-medium">
+            <i data-lucide="check-circle" class="w-5 h-5 inline mr-2"></i>
+            Trennung von Verantwortlichkeiten funktioniert hier gut.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 4: Analysierbarkeit -->
+    <section class="slide pattern-gradient" id="slide-4">
+      <div class="max-w-4xl w-full">
+        <h2
+          class="text-4xl md:text-6xl font-bold mb-6 text-slate-100 text-center"
+        >
+          Analysierbarkeit
+        </h2>
+        <p class="text-xl text-slate-400 mb-12 text-center">
+          Der Code ist insgesamt gut lesbar und schnell erfassbar.
+        </p>
+
+        <div class="space-y-4 max-w-2xl mx-auto">
+          <div class="glass-card p-6 rounded-xl flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0"
+            >
+              <i data-lucide="type" class="w-6 h-6 text-blue-400"></i>
+            </div>
+            <p class="text-lg text-slate-300">Sprechende Klassennamen</p>
+          </div>
+
+          <div class="glass-card p-6 rounded-xl flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0"
+            >
+              <i data-lucide="minimize-2" class="w-6 h-6 text-blue-400"></i>
+            </div>
+            <p class="text-lg text-slate-300">Kleine, fokussierte Methoden</p>
+          </div>
+
+          <div class="glass-card p-6 rounded-xl flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0"
+            >
+              <i data-lucide="git-branch" class="w-6 h-6 text-blue-400"></i>
+            </div>
+            <p class="text-lg text-slate-300">
+              Kontrollfluss meist gut nachvollziehbar
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 5: Änderbarkeit -->
+    <section class="slide pattern-gradient" id="slide-5">
+      <div class="max-w-4xl w-full text-center">
+        <h2 class="text-4xl md:text-6xl font-bold mb-6 text-slate-100">
+          Änderbarkeit
+        </h2>
+        <p class="text-xl text-slate-400 mb-12">
+          Neue Anforderungen lassen sich oft mit wenig Risiko ergänzen.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6 text-left">
+          <div class="glass-card p-6 rounded-xl border-l-4 border-indigo-500">
+            <i
+              data-lucide="plus-circle"
+              class="w-6 h-6 text-indigo-400 mb-3"
+            ></i>
+            <p class="text-slate-300">
+              Erweiterungen sind vergleichsweise einfach
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-xl border-l-4 border-indigo-500">
+            <i data-lucide="factory" class="w-6 h-6 text-indigo-400 mb-3"></i>
+            <p class="text-slate-300">
+              Factory-Prinzip unterstützt Anpassungen
+            </p>
+          </div>
+
+          <div class="glass-card p-6 rounded-xl border-l-4 border-indigo-500">
+            <i
+              data-lucide="layout-template"
+              class="w-6 h-6 text-indigo-400 mb-3"
+            ></i>
+            <p class="text-slate-300">Neue Views lassen sich sauber ergänzen</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 6: Code Smells Übersicht -->
+    <section class="slide smell-gradient" id="slide-6">
+      <div class="max-w-6xl w-full">
+        <h2
+          class="text-4xl md:text-5xl font-bold mb-4 text-center text-slate-100"
+        >
+          Wo wird es kritisch?
+        </h2>
+        <p class="text-slate-400 text-center mb-12">
+          Nicht alles ist problematisch – aber genau hier wird die Wartbarkeit
+          bei Wachstum angreifbar.
+        </p>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto"
+        >
+          <!-- Switch -->
+          <div
+            class="glass-card p-6 rounded-xl hover:bg-slate-800/50 transition"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-4"
+            >
+              <i data-lucide="git-merge" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200 mb-1">
+              Switch-Statements
+            </h3>
+            <p class="text-sm text-slate-400">Zentrale Erzeugungslogik</p>
+          </div>
+
+          <!-- Event -->
+          <div
+            class="glass-card p-6 rounded-xl hover:bg-slate-800/50 transition"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-4"
+            >
+              <i data-lucide="zap" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200 mb-1">
+              Event-Komplexität
+            </h3>
+            <p class="text-sm text-slate-400">
+              Entkopplung vs. Nachvollziehbarkeit
+            </p>
+          </div>
+
+          <!-- Performance -->
+          <div
+            class="glass-card p-6 rounded-xl hover:bg-slate-800/50 transition"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-4"
+            >
+              <i data-lucide="hard-drive" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200 mb-1">
+              Performance / I/O
+            </h3>
+            <p class="text-sm text-slate-400">Speicherineffizienz</p>
+          </div>
+
+          <!-- Overengineering -->
+          <div
+            class="glass-card p-6 rounded-xl hover:bg-slate-800/50 transition"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-4"
+            >
+              <i data-lucide="cpu" class="w-5 h-5 text-amber-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200 mb-1">
+              Overengineering
+            </h3>
+            <p class="text-sm text-slate-400">
+              Zu komplex für einfache Aufgaben
+            </p>
+          </div>
+
+          <!-- Security -->
+          <div
+            class="glass-card p-6 rounded-xl hover:bg-slate-800/50 transition md:col-span-2 lg:col-span-1"
+          >
+            <div
+              class="w-10 h-10 rounded-lg bg-rose-500/20 flex items-center justify-center mb-4"
+            >
+              <i data-lucide="shield-alert" class="w-5 h-5 text-rose-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-200 mb-1">Security</h3>
+            <p class="text-sm text-slate-400">Veraltete Hash-Algorithmen</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 7: Code Smell Switch -->
+    <section class="slide smell-gradient" id="slide-7">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div
+              class="inline-flex items-center gap-2 text-amber-400 font-medium"
+            >
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              <span>Code Smell #1</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Switch-Statements
+            </h2>
+            <p class="text-lg text-slate-400">
+              Die Handler-Erzeugung funktioniert, skaliert aber schlecht.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <span
+                  class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 mt-0.5"
+                  >1</span
+                >
+                <span>Neue Fälle erfordern Änderungen an zentraler Stelle</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <span
+                  class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 mt-0.5"
+                  >2</span
+                >
+                <span>Open-Closed Principle wird verletzt</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <span
+                  class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm shrink-0 mt-0.5"
+                  >3</span
+                >
+                <span>Bei Wachstum wird der Block schnell unübersichtlich</span>
+              </li>
+            </ul>
+
+            <div
+              class="mt-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg"
+            >
+              <p class="text-sm text-indigo-300">
+                <i data-lucide="arrow-right" class="w-4 h-4 inline mr-1"></i>
+                Bessere Richtung: Map / Registry statt wachsendem switch
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+          >
+            <img
+              src="./switch-statement.png"
+              alt="Codeausschnitt: Switch-Statement in der ResponseHandlerFactory"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 8: Code Smell Event -->
+    <section class="slide smell-gradient" id="slide-8">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="order-2 md:order-1">
+            <div
+              class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+            >
+              <img
+                src="./eventBus.png"
+                alt="Codebeispiel: EventBus mit post() und @Subscribe"
+                class="w-full h-full object-contain"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-6">
+              <div
+                class="p-4 bg-emerald-500/10 rounded-lg border border-emerald-500/20"
+              >
+                <p class="text-sm font-medium text-emerald-300 mb-1">Vorteil</p>
+                <p class="text-sm text-emerald-400/80">Lose Kopplung</p>
+              </div>
+              <div
+                class="p-4 bg-rose-500/10 rounded-lg border border-rose-500/20"
+              >
+                <p class="text-sm font-medium text-rose-300 mb-1">Nachteil</p>
+                <p class="text-sm text-rose-400/80">
+                  Schwerer nachzuvollziehen
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6 order-1 md:order-2">
+            <div
+              class="inline-flex items-center gap-2 text-amber-400 font-medium"
+            >
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              <span>Code Smell #2</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Event-System
+            </h2>
+            <p class="text-lg text-slate-400">
+              Starke Entkopplung hilft – macht den Ablauf aber schwerer
+              greifbar.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="minus"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Kontrollfluss ist weniger direkt sichtbar</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="minus"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Debugging wird schwieriger</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="minus"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Event-Spaghetti kann bei Wachstum entstehen</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 9: Code Smell Performance -->
+    <section class="slide smell-gradient" id="slide-9">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div
+              class="inline-flex items-center gap-2 text-amber-400 font-medium"
+            >
+              <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+              <span>Code Smell #3</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Performance / I/O
+            </h2>
+            <p class="text-lg text-slate-400">
+              Die Speicherung ist funktional, aber nicht effizient.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="file-json"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>JSON wird bei Änderungen komplett neu geschrieben</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="activity"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Hoher I/O-Aufwand</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="trending-down"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Schlecht skalierbar bei häufigen Statusänderungen</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+          >
+            <img
+              src="./JSON.png"
+              alt="Codebeispiel: saveToFile() schreibt Accounts als JSON"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 10: Code Smell Overengineering -->
+    <section class="slide smell-gradient" id="slide-10">
+      <div class="max-w-4xl w-full text-center">
+        <div
+          class="inline-flex items-center gap-2 text-amber-400 font-medium mb-4"
+        >
+          <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+          <span>Code Smell #4</span>
+        </div>
+
+        <h2 class="text-4xl md:text-5xl font-bold mb-6 text-slate-100">
+          Overengineering
+        </h2>
+        <p class="text-xl text-slate-400 mb-12">
+          Für einfache Aufgaben wird teils unnötig komplex gearbeitet.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-8 text-left">
+          <div class="glass-card p-6 rounded-xl">
+            <i data-lucide="code-2" class="w-6 h-6 text-amber-400 mb-3"></i>
+            <p class="text-slate-300">Reflection für simple Settings</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl">
+            <i data-lucide="puzzle" class="w-6 h-6 text-amber-400 mb-3"></i>
+            <p class="text-slate-300">Erhöhte Komplexität</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl">
+            <i data-lucide="brain" class="w-6 h-6 text-amber-400 mb-3"></i>
+            <p class="text-slate-300">Verstoß gegen das KISS-Prinzip</p>
+          </div>
+        </div>
+
+        <div
+          class="inline-block p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg"
+        >
+          <p class="text-indigo-300 font-medium text-lg">
+            „Nicht alles muss maximal generisch sein.“
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 11: Code Smell Security -->
+    <section class="slide smell-gradient" id="slide-11">
+      <div class="max-w-4xl w-full">
+        <div class="text-center mb-12">
+          <div
+            class="inline-flex items-center gap-2 text-rose-400 font-medium mb-4"
+          >
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <span>Code Smell #5</span>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-bold mb-6 text-slate-100">
+            Security
+          </h2>
+          <p class="text-xl text-slate-400">
+            Beim Passwort-Handling gibt es einen klaren Schwachpunkt.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+          <div class="glass-card p-6 rounded-xl border-t-4 border-rose-500">
+            <h3 class="text-lg font-semibold text-slate-200 mb-2">SHA-1</h3>
+            <p class="text-slate-400">Veralteter Algorithmus</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl border-t-4 border-rose-500">
+            <h3 class="text-lg font-semibold text-slate-200 mb-2">Kein Salt</h3>
+            <p class="text-slate-400">Fehlende Absicherung</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl border-t-4 border-rose-500">
+            <h3 class="text-lg font-semibold text-slate-200 mb-2">
+              Angriffsrisiko
+            </h3>
+            <p class="text-slate-400">Erhöhte Risiken bei Angriffen</p>
+          </div>
+        </div>
+
+        <div
+          class="p-6 bg-rose-500/10 border border-rose-500/30 rounded-xl text-center"
+        >
+          <p class="text-rose-300 font-semibold text-lg">
+            <i data-lucide="shield-alert" class="w-6 h-6 inline mr-2"></i>
+            Technisch funktional, sicherheitlich aber kritisch.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 12: Übergang -->
+    <section class="slide transition-gradient" id="slide-12">
+      <div class="max-w-4xl w-full text-center">
+        <div class="w-24 h-1 bg-indigo-400 mx-auto mb-8 rounded-full"></div>
+        <h2 class="text-4xl md:text-6xl font-bold mb-6 text-slate-100">
+          Und was wurde bewusst<br />gut gemacht?
+        </h2>
+        <p class="text-xl md:text-2xl text-indigo-200/80">
+          Im Code lassen sich mehrere sinnvolle Design Patterns erkennen.
+        </p>
+        <div class="w-24 h-1 bg-indigo-400 mx-auto mt-8 rounded-full"></div>
+      </div>
+    </section>
+
+    <!-- Folie 13: Factory Pattern -->
+    <section class="slide pattern-gradient" id="slide-13">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-sm font-medium"
+            >
+              <i data-lucide="factory" class="w-4 h-4"></i>
+              <span>Design Pattern</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Factory
+            </h2>
+            <p class="text-lg text-slate-400">
+              Objekterzeugung wird zentral gekapselt.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Erstellung ist vom restlichen Code entkoppelt</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Verantwortlichkeiten bleiben sauber getrennt</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Gut für Erweiterbarkeit</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+          >
+            <img
+              src="./factory.png"
+              alt="Diagramm: Factory-Struktur rund um die RequestHandlerFactory"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 14: MVP Pattern -->
+    <section class="slide pattern-gradient" id="slide-14">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="order-2 md:order-1">
+            <div
+              class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+            >
+              <img
+                src="./model view presenter.png"
+                alt="Diagramm: Presenter vermittelt zwischen View und Logik"
+                class="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-6 order-1 md:order-2">
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm font-medium"
+            >
+              <i data-lucide="layers" class="w-4 h-4"></i>
+              <span>Design Pattern</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Model-View-Presenter
+            </h2>
+            <p class="text-lg text-slate-400">
+              UI und Logik sind sauber getrennt.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>View bleibt möglichst schlank</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Presenter steuert die Interaktion</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Gute Test- und Austauschbarkeit</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 15: Observer -->
+    <section class="slide pattern-gradient" id="slide-15">
+      <div class="max-w-6xl w-full">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="space-y-6">
+            <div
+              class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 text-sm font-medium"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+              <span>Design Pattern</span>
+            </div>
+
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-100">
+              Observer / Publish-Subscribe
+            </h2>
+            <p class="text-lg text-slate-400">
+              Komponenten kommunizieren über Events statt über direkte Aufrufe.
+            </p>
+
+            <ul class="space-y-3 mt-6">
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Lose Kopplung</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="check"
+                  class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Ereignisbasierte Kommunikation</span>
+              </li>
+              <li class="flex items-start gap-3 text-slate-300">
+                <i
+                  data-lucide="alert-circle"
+                  class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"
+                ></i>
+                <span>Gleichzeitig auch Quelle für Komplexität</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            class="rounded-2xl overflow-hidden border border-slate-700 aspect-video bg-white"
+          >
+            <img
+              src="./observer eventbus.png"
+              alt="Diagramm: EventBus-Prinzip mit post(Event) und @Subscribe"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Folie 16: Fazit -->
+    <section class="slide pattern-gradient" id="slide-16">
+      <div class="max-w-4xl w-full text-center">
+        <h2 class="text-5xl md:text-7xl font-bold mb-8 text-slate-100">
+          Fazit
+        </h2>
+
+        <p class="text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto">
+          Das System zeigt eine solide Architektur-Basis – mit klaren Stärken,
+          aber auch einigen Risiken bei Wachstum.
+        </p>
+
+        <div
+          class="grid md:grid-cols-3 gap-6 mb-12 text-left max-w-4xl mx-auto"
+        >
+          <div class="glass-card p-6 rounded-xl border-l-4 border-emerald-500">
+            <p class="text-slate-300 font-medium">
+              Gute strukturelle Grundlage
+            </p>
+          </div>
+          <div class="glass-card p-6 rounded-xl border-l-4 border-blue-500">
+            <p class="text-slate-300 font-medium">Sinnvolle Design Patterns</p>
+          </div>
+          <div class="glass-card p-6 rounded-xl border-l-4 border-rose-500">
+            <p class="text-slate-300 font-medium">
+              Schwächen bei Skalierung, Nachvollziehbarkeit und Security
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-8 border-t border-slate-800 max-w-3xl mx-auto">
+          <p class="text-lg text-slate-300 italic">
+            „Die Architektur trägt das System gut – einzelne technische
+            Entscheidungen könnten langfristig aber problematisch werden.“
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // Initialize Lucide Icons
+      lucide.createIcons();
+
+      // Optional: Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        const slides = document.querySelectorAll(".slide");
+        const currentScroll = window.scrollY;
+        const windowHeight = window.innerHeight;
+        let currentIndex = Math.round(currentScroll / windowHeight);
+
+        if (e.key === "ArrowDown" || e.key === "PageDown") {
+          e.preventDefault();
+          if (currentIndex < slides.length - 1) {
+            slides[currentIndex + 1].scrollIntoView({ behavior: "smooth" });
+          }
+        } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+          e.preventDefault();
+          if (currentIndex > 0) {
+            slides[currentIndex - 1].scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
