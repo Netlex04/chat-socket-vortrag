@@ -6,13 +6,24 @@ Eine einfache HTML-basierte Präsentation, die direkt aus dem Browser läuft. Id
 
 Die Präsentation muss über einen lokalen HTTP-Server laufen, damit der Chrome-`--app`-Modus funktioniert.
 
-### 1) Live Server (VS Code)
+### 1) HTTP-Server starten
+
+#### a) Live Server (VS Code)
 
 1. Öffne den Ordner `presentation` in VS Code.
 2. Installiere die Erweiterung **Live Server** (falls noch nicht installiert).
 3. Rechtsklicke auf `index.html` → **"Open with Live Server"**.
 
 > ✅ Vorteil: Automatisches Neuladen bei Änderungen.
+
+#### b) Schneller Webserver (Python)
+
+Falls du keinen Live-Server nutzen möchtest, kannst du einen minimalen HTTP-Server starten:
+
+```bash
+cd presentation
+python3 -m http.server 5500
+```
 
 ### 2) Chrome im App-Modus starten (optional)
 
@@ -30,20 +41,7 @@ Um die Präsentation _wie eine App_ anzuzeigen (ohne Tabs/Adressleiste), starte 
 chrome --app=http://127.0.0.1:5500/index.html
 ```
 
-> ✔️ Wichtig: Der Live Server muss laufen, damit der Chrome App-Modus die Seite laden kann.
-
-## 🧪 Alternative: Schneller Webserver (Python)
-
-Falls du keinen Live-Server nutzen möchtest, kannst du einen minimalen HTTP-Server starten:
-
-```bash
-cd presentation
-python3 -m http.server 5500
-```
-
-Dann im Browser öffnen:
-
-`http://127.0.0.1:5500/index.html`
+> ✔️ Wichtig: Ein lokaler HTTP-Server (Live Server oder Python) muss laufen, damit der Chrome App-Modus die Seite laden kann.
 
 ---
 
