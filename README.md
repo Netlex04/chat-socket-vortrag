@@ -45,19 +45,6 @@ Dann im Browser öffnen:
 
 `http://127.0.0.1:5500/index.html`
 
-## 🧪 Alternative: Schneller Webserver (Python)
-
-Falls du keinen Live-Server nutzen möchtest, kannst du einen minimalen HTTP-Server starten:
-
-```bash
-cd presentation
-python3 -m http.server 5500
-```
-
-Dann im Browser öffnen:
-
-`http://127.0.0.1:5500/index.html`
-
 ---
 
 ## 📝 Inhalt
